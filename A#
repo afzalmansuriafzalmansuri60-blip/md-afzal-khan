@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Unique Rainbow Sphere</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #111; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        // --- Setup (Setting up the standard components) ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true }); // Improved quality
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        
+        // Add subtle ambient light
+        const light = new THREE.AmbientLight(0x404040); // Soft white light
+        scene.add(light);
+
+        // Add a directional light for better shading
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(5, 5, 5);
+        scene.add(directionalLight);
+
+        // --- Unique Object Creation (Rainbow Sphere) ---
+        
+        // 1. Create a Sphere Geometry
+        const geometry = new THREE.SphereGeometry(1.5, 32, 32);
+
+        // 2. Create a Lambert Material (responds to light)
+        // We start with a base color, which will change in the loop
+        const material = new THREE.MeshLambertMaterial({ color: 0xff0000 }); 
+
+        // 3. Create the Mesh
+        const rainbowSphere = new THREE.Mesh(geometry, material);
+        scene.add(rainbowSphere);
+
+        camera.position.z = 5;
+
+        // Variables for Unique Motion
+        let time = 0;
+        const speedMultiplier = 0.05; // Controls animation speed
+        const rotationSpeedX = Math.random() * 0.005 + 0.005; // Random start rotation X
+        const rotationSpeedY = Math.random() * 0.005 + 0.005; // Random start rotation Y
+
+        // --- Animation Loop with Unique Logic ---
+        function animate() {
+            requestAnimationFrame(animate);
+
+            time += speedMultiplier;
+
+            // 1. Unique Rainbow Color Change (Hue based on sine wave)
+            // HSL color model is converted to Hexadecimal for Three.js
+            const hue = (Math.sin(time * 0.1) + 1) / 2; // Ranges from 0 to 1
+            const color = new THREE.Color().setHSL(hue, 1.0, 0.5); // Full Saturation, Mid Luminosity
+            material.color.set(color);
+
+            // 2. Unique Breathing/Scaling Effect
+            const scaleFactor = 1.0 + Math.sin(time * 0.5) * 0.1; // Scales between 0.9 and 1.1
+            rainbowSphere.scale.set(scaleFactor, scaleFactor, scaleFactor);
+
+            // 3. Unique Random-like Rotation
+            rainbowSphere.rotation.x += rotationSpeedX * Math.sin(time * 0.2);
+            rainbowSphere.rotation.y += rotationSpeedY * Math.cos(time * 0.3);
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // --- Handle Window Resize (Standard practice) ---
+        window.addEventListener('resize', () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
+    </script>
+</body>
+</html>
